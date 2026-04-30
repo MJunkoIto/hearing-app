@@ -77,9 +77,7 @@ npm run preview     # 本番ビルドをローカルでプレビュー
 
 ## GitHub Pages の公開URL
 
-公開後にここへURLを記載してください。
-
-> 例：https://<your-github-username>.github.io/hearing-app/
+**公開URL：** https://mjunkoito.github.io/hearing-app/
 
 ### デプロイ手順（参考）
 
