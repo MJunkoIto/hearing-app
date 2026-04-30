@@ -178,14 +178,6 @@ function App() {
               ))}
             </ul>
 
-            <button
-              type="button"
-              className="submit-button"
-              onClick={handleSendMail}
-            >
-              メールで送信する
-            </button>
-
             <div className="action-row">
               <button
                 type="button"
@@ -200,6 +192,16 @@ function App() {
                 onClick={handleDelete}
               >
                 すべて削除
+              </button>
+            </div>
+
+            <div className="send-mail-row">
+              <button
+                type="button"
+                className="submit-button send-mail-button"
+                onClick={handleSendMail}
+              >
+                メールで送信する
               </button>
             </div>
           </section>

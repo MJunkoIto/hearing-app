@@ -146,6 +146,20 @@
   margin-top: 24px;
 }
 
+/* 「編集する / すべて削除」と「メールで送信する」の間の区切り余白
+   中央揃えで配置し、ボタン幅はレスポンシブに上限を設ける */
+.send-mail-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+}
+
+.send-mail-button {
+  width: 100%;
+  max-width: 320px;
+  margin-top: 0; /* .submit-button のデフォルト余白を打ち消し、行間隔を一定に保つ */
+}
+
 .secondary-button,
 .danger-button {
   font-size: 15px;
