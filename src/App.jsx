@@ -15,16 +15,28 @@ const QUESTIONS = [
 
 const STORAGE_KEY = 'hearing-app-answers'
 
+// メール送信先・件名（クライアント側で完結する mailto 用の固定値）
+const MAIL_TO = 'soutozen2018@gmail.com'
+const MAIL_SUBJECT = 'ヒアリングシート回答'
+
 // 空の回答配列をつくるヘルパー
 function createEmptyAnswers() {
   return QUESTIONS.map(() => '')
 }
 
+// 回答配列からメール本文文字列を組み立てる
+function buildMailBody(answers) {
+  return QUESTIONS.map((q, i) => {
+    const a = answers[i].trim() === '' ? '（未入力）' : answers[i]
+    return `${i + 1}. ${q}\n回答：${a}\n`
+  }).join('\n')
+}
+
 function App() {
   // 入力中の回答
   const [answers, setAnswers] = useState(createEmptyAnswers)
-  // 送信済みかどうか（true なら一覧画面を表示）
-  const [submitted, setSubmitted] = useState(false)
+  // 画面状態：'form' = 入力, 'result' = 確認, 'thanks' = サンクス
+  const [view, setView] = useState('form')
 
   // 初回マウント時に localStorage から復元
   useEffect(() => {
@@ -32,9 +44,18 @@ function App() {
     if (saved) {
       try {
         const data = JSON.parse(saved)
-        if (Array.isArray(data.answers) && data.answers.length === QUESTIONS.length) {
+        if (
+          Array.isArray(data.answers) &&
+          data.answers.length === QUESTIONS.length
+        ) {
           setAnswers(data.answers)
-          setSubmitted(Boolean(data.submitted))
+          if (
+            data.view === 'form' ||
+            data.view === 'result' ||
+            data.view === 'thanks'
+          ) {
+            setView(data.view)
+          }
         }
       } catch {
         // JSONが壊れていた場合は無視して初期状態のまま
@@ -42,13 +63,10 @@ function App() {
     }
   }, [])
 
-  // answers / submitted が変わるたびに localStorage に保存
+  // answers / view が変わるたびに localStorage に保存
   useEffect(() => {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ answers, submitted }),
-    )
-  }, [answers, submitted])
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers, view }))
+  }, [answers, view])
 
   // 各テキストエリアの変更を反映
   const handleChange = (index, value) => {
@@ -62,13 +80,13 @@ function App() {
   // 送信ボタン → 一覧画面へ
   const handleSubmit = (e) => {
     e.preventDefault()
-    setSubmitted(true)
+    setView('result')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   // 編集に戻る
   const handleEdit = () => {
-    setSubmitted(false)
+    setView('form')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -76,9 +94,29 @@ function App() {
   const handleDelete = () => {
     if (window.confirm('入力内容をすべて削除します。よろしいですか？')) {
       setAnswers(createEmptyAnswers())
-      setSubmitted(false)
+      setView('form')
       localStorage.removeItem(STORAGE_KEY)
     }
+  }
+
+  // メールで送信する → mailto を起動 → サンクスページへ
+  const handleSendMail = () => {
+    const body = buildMailBody(answers)
+    const mailto =
+      `mailto:${MAIL_TO}` +
+      `?subject=${encodeURIComponent(MAIL_SUBJECT)}` +
+      `&body=${encodeURIComponent(body)}`
+    // メールアプリ起動（同タブのまま遷移してもOK）
+    window.location.href = mailto
+    // 案内ページへ遷移
+    setView('thanks')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  // サンクスページから入力画面へ戻る
+  const handleBackToForm = () => {
+    setView('form')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
@@ -94,7 +132,7 @@ function App() {
       </header>
 
       <main className="container">
-        {!submitted ? (
+        {view === 'form' && (
           <form onSubmit={handleSubmit} className="form">
             {QUESTIONS.map((q, index) => (
               <section key={index} className="card">
@@ -116,7 +154,9 @@ function App() {
               送信する
             </button>
           </form>
-        ) : (
+        )}
+
+        {view === 'result' && (
           <section className="result">
             <h2 className="result-title">ご回答の確認</h2>
             <p className="result-desc">
@@ -138,6 +178,14 @@ function App() {
               ))}
             </ul>
 
+            <button
+              type="button"
+              className="submit-button"
+              onClick={handleSendMail}
+            >
+              メールで送信する
+            </button>
+
             <div className="action-row">
               <button
                 type="button"
@@ -153,6 +201,37 @@ function App() {
               >
                 すべて削除
               </button>
+            </div>
+          </section>
+        )}
+
+        {view === 'thanks' && (
+          <section className="thanks">
+            <div className="card thanks-card">
+              <h2 className="result-title">ありがとうございました</h2>
+              <p className="thanks-message">
+                メールアプリが起動しました。送信を完了してください。
+              </p>
+              <p className="thanks-note">
+                メールアプリが起動しない場合は、確認画面に戻り
+                「メールで送信する」をもう一度お試しください。
+              </p>
+              <div className="action-row">
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={() => setView('result')}
+                >
+                  確認画面に戻る
+                </button>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={handleBackToForm}
+                >
+                  入力画面に戻る
+                </button>
+              </div>
             </div>
           </section>
         )}

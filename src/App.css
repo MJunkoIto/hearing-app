@@ -198,6 +198,32 @@
 }
 
 /* ========================================
+   サンクス画面
+   ======================================== */
+.thanks {
+  margin-top: 24px;
+}
+
+.thanks-card {
+  text-align: center;
+  padding: 40px 24px;
+}
+
+.thanks-message {
+  font-size: 17px;
+  color: #1f4d3a;
+  font-weight: 600;
+  margin: 16px 0 12px;
+  line-height: 1.7;
+}
+
+.thanks-note {
+  font-size: 13px;
+  color: #4a5a52;
+  margin: 0 0 8px;
+}
+
+/* ========================================
    フッター
    ======================================== */
 .footer {
