@@ -5,5 +5,5 @@ import react from '@vitejs/plugin-react'
 // リポジトリ名を変更した場合は base のパスも変更してください。
 export default defineConfig({
   plugins: [react()],
-  base: './',
+  base: '/hearing-app/',
 })
