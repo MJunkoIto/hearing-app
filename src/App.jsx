@@ -15,8 +15,12 @@ const QUESTIONS = [
 
 const STORAGE_KEY = 'hearing-app-answers'
 
-// メール送信先・件名（クライアント側で完結する mailto 用の固定値）
-const MAIL_TO = 'soutozen2018@gmail.com'
+// ▼▼▼ メール送信先（mailto の宛先）▼▼▼
+// 本番運用時はこの 1 行を本番のメールアドレスに書き換えてください。
+// 例）const MAIL_TO = 'real-address@example.com'
+const MAIL_TO = 'example@example.com' // ダミーアドレス
+// ▲▲▲ メール送信先 ▲▲▲
+
 const MAIL_SUBJECT = 'ヒアリングシート回答'
 
 // 空の回答配列をつくるヘルパー
